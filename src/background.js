@@ -32,7 +32,7 @@ function createWindow() {
         console.log(cookies,"cookies------------------")
         if (!cookies.length) {
             width = 400
-            height = 500
+            height = 320
         }
         win = new BrowserWindow({
             width: width,
