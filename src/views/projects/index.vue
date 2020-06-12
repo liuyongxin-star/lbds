@@ -18,11 +18,7 @@
       </div>
     </div>
 
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      stripe
-    >
+    <el-table :data="tableData" style="width: 100%" stripe>
       <el-table-column prop="name" label="项目名称" width="150">
       </el-table-column>
       <el-table-column prop="describe" label="描述（技术栈）" width="150">
@@ -56,6 +52,7 @@
 <script>
 import { setTimeout } from "timers";
 import { Loading } from "element-ui";
+
 const exec = require("child_process").exec;
 const execFile = require("child_process").execFile;
 const fs = require("fs");
@@ -73,38 +70,42 @@ export default {
           name: "PC商城",
           describe: "webpack",
           git: "git@code.aliyun.com:ygp-frontend/ygp-mall-static.git",
-          document: "http://static.doc.yigongpin.net:8888/pc-shop-now/"
+          document: "http://static.doc.yigongpin.net:8888/pc-shop-now/",
         },
         {
           name: "后台管理系统",
           describe: "vue",
           git:
             "git@e.coding.net:yigongpin/yigongpin_system/yigongpin_applet.git",
-          document: "http://static.doc.yigongpin.net:8888/ygp-oneself-system/"
+          document: "http://static.doc.yigongpin.net:8888/ygp-oneself-system/",
         },
         {
           name: "后台管理系统",
           describe: "vue",
           git:
             "git@e.coding.net:yigongpin/yigongpin_system/yigongpin_applet.git",
-          document: "http://static.doc.yigongpin.net:8888/ygp-oneself-system/"
-        }
+          document: "http://static.doc.yigongpin.net:8888/ygp-oneself-system/",
+        },
       ],
       tableData: [],
       defaultUrl: "D:/",
-      loadingInstance: null
+      loadingInstance: null,
     };
   },
   mounted() {
     this.loadingInstance = Loading.service({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        });
+      lock: true,
+      text: "Loading",
+      spinner: "el-icon-loading",
+      background: "rgba(0, 0, 0, 0.7)",
+    });
+    this.init();
     this.getProject();
   },
   methods: {
+    init() {
+      this.project = [];
+    },
     start(file) {
       //启动应用
       const url = localStorage.getItem("save_path");
@@ -116,7 +117,7 @@ export default {
           if (item.git === value.git) {
             this.project[index] = {
               ...this.project[index],
-              ...this.project2[key]
+              ...this.project2[key],
             };
             this.project2[key] = this.project[index];
           }
@@ -132,7 +133,7 @@ export default {
         name: address[address.length - 1],
         describe: "暂无",
         git: git && git[0],
-        filePath: url
+        filePath: url,
       });
       this.filterFn();
       this.tableData = this.project;
@@ -147,13 +148,11 @@ export default {
       timer = setTimeout(() => {
         this.loadingInstance.close();
       }, 5000);
-      console.log("遍历");
       var defaultUrl = url;
       fs.readdir(defaultUrl, (err, files) => {
         if (err) {
           console.log(err);
         }
-        // var name = "";
         if (files && files.length != 0) {
           for (var i = 0; i < files.length; i++) {
             var url = defaultUrl + "/" + files[i];
@@ -164,6 +163,7 @@ export default {
             }
             if (files[i] === ".git") {
               this.checkGit(url + "/config", defaultUrl);
+              break;
             }
             if (
               files[i] != "node_modules" &&
@@ -193,8 +193,8 @@ export default {
     },
     handleClick(row) {
       console.log(row);
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

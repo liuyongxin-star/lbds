@@ -19,6 +19,9 @@
           >选择编辑器</el-button
         >
       </div>
+      <el-button type="primary" @click="clearFn" style="width:28%"
+        >清除缓存</el-button
+      >
       <!-- <el-button type="primary" @click="createFn" style="width:28%"
         >创建页面</el-button
       >
@@ -40,34 +43,47 @@
 
 <script>
 import { user, login } from "@/apis/api";
+import { ipcRenderer } from "electron";
 const exec = require("child_process").exec;
 const execFile = require("child_process").execFile;
 const process = require("process");
+const remote = require("electron").remote;
 export default {
   data() {
     return {
-      save_path: null
+      save_path: null,
     };
   },
-  components: {
-  },
+  components: {},
   mounted() {
     this.save_path = localStorage.getItem("save_path");
-    // this.createFn()
+    this.setWidth();
   },
   methods: {
+    clearFn() {
+        localStorage.removeItem("token")
+        console.log(localStorage.getItem("token"))
+      remote.session.defaultSession.cookies
+        .remove("http://localhost/", "token")
+        .then((res) => {
+          console.log(res);
+        });
+    },
+    setWidth() {
+      ipcRenderer.send("setMainWindow", { width: 1122, height: 670 });
+    },
     loginFn() {
       const data = {
         name: "名字",
         password: "123",
-        phone:"13712512366"
+        phone: "13712512366",
       };
-      login(data).then(res => {
+      login(data).then((res) => {
         console.log(res);
       });
     },
     getData() {
-      user().then(res => {
+      user().then((res) => {
         console.log(res);
       });
     },
@@ -85,7 +101,6 @@ export default {
       process.chdir(this.save_path);
       exec("git add .");
       exec("git commit -m '测试'");
-    
     },
     start() {
       //启动应用
@@ -106,7 +121,7 @@ export default {
       );
       exec("git config core.sparsecheckout true");
       exec("echo test* >> .git/info/sparse-checkout");
-   
+
       // exec("git remote add -f origin https://github.com/liuyongxin-star/git_demo.git")
       // exec("git config core.sparsecheckout true");
       // exec("echo 'test' >> .git/info/sparse-checkout");
@@ -123,8 +138,8 @@ export default {
       //     }
       //   }
       // );
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">

@@ -22,6 +22,14 @@ const routes = [
       },
     }]
   },
+  {
+    path: '/login',
+    component: () => import("@/views/user/login"),
+    meta: {
+      title: "登录",
+      noLogin: true
+    },
+  },
   project,
   component,
   template
@@ -36,4 +44,20 @@ const routerPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
   return routerPush.call(this, location).catch(error => error);
 }
+router.beforeEach(async(to, from, next) => {
+  console.log(to.name,"to")
+  const hasToken = localStorage.getItem("token")
+  console.log(hasToken)
+  if(to.meta.noLogin){ //不需要登录
+    next()
+    return;
+  }
+  if(!hasToken){
+    next("/login")
+    return;
+  }
+  next()
+
+  
+})
 export default router
