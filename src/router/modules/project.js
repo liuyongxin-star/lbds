@@ -3,7 +3,8 @@ const project = {
     component: () => import("@/views/layout/index"),
     icon: "el-icon-folder-opened",
     meta: {
-      title: "项目管理"
+      title: "项目管理",
+      nav: true
     },
     children: [{
       path: "",

@@ -1,10 +1,11 @@
 <template>
   <div class="login">
-    <div class="login-header">鲁班大师
-        <div class="personal_outside">
-      <span class="el-icon-minus" @click="minimizeWin"></span>
-      <span class="el-icon-close" @click="closeWin"></span>
-    </div>
+    <div class="login-header">
+      鲁班大师
+      <div class="personal_outside">
+        <span class="el-icon-minus" @click="minimizeWin"></span>
+        <span class="el-icon-close" @click="closeWin"></span>
+      </div>
     </div>
     <div class="login-content">
       <el-input
@@ -23,14 +24,21 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-lock"></i>
       </el-input>
-      <el-button type="primary" class="login" @click="loginFn">登录</el-button>
+      <el-button type="primary" class="login-btn" @click="loginFn"
+        >登录</el-button
+      >
+      <!-- <div class="login-footer">
+        <span>注册账户</span>
+        <span>忘记密码</span>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import { ipcRenderer, session } from "electron";
-const remote = require("electron").remote;
+import storage from "@/utils/datastore";
+import { login } from "@/apis/user";
 export default {
   data() {
     return {
@@ -41,11 +49,12 @@ export default {
     };
   },
   mounted() {
-    this.setWidth();
+    console.log("回来了---------")
+     ipcRenderer.send("setMainWindow", { width: 400, height: 820 });
   },
   methods: {
     minimizeWin() {
-      ipcRenderer.send("window-min"); // 通知主进程我要进行窗口最小化操作
+      ipcRenderer.send("window-min");
     },
     maximizeWin() {
       ipcRenderer.send("window-max");
@@ -54,25 +63,20 @@ export default {
       ipcRenderer.send("window-close");
     },
     loginFn() {
-      const cookie = {
-        url: "http://localhost/",
-        name: "token",
-        value: "token",
-        expirationDate: new Date().getTime() + 30 * 24 * 3600 * 1000,
-      };
-      remote.session.defaultSession.cookies.set(cookie).then(
-        (res) => {
-          console.log(res);
-          localStorage.setItem("token", "token");
+      login(this.form).then((res) => {
+        this.$message({
+          message: "登录成功",
+          type: "success",
+        });
+        setTimeout(() => {
+          storage.set("token", res.data.token).write();
           this.$router.push("/");
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
+        }, 1500);
+      });
     },
+
     setWidth() {
-      ipcRenderer.send("setMainWindow", { width: 400, height: 320 });
+      ipcRenderer.send("setMainWindow", { width: 400, height: 820 });
     },
   },
 };
@@ -88,14 +92,14 @@ export default {
     top: 0;
     right: 0;
     z-index: 10;
-    span{
-        margin: 10px;
-        cursor: pointer;
+    span {
+      margin: 10px;
+      cursor: pointer;
     }
   }
   .login-header {
     width: 100%;
-    height: 80px;
+    height: 70px;
     font-size: 18px;
     font-family: MicrosoftYaHei-Bold, MicrosoftYaHei;
     font-weight: bold;
@@ -109,10 +113,10 @@ export default {
   .login-content {
     padding: 20px 40px;
     .input-item {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
   }
-  .login {
+  .login-btn {
     background: #fe5f23;
     font-size: 16px;
     font-family: MicrosoftYaHei-Bold, MicrosoftYaHei;
@@ -120,6 +124,23 @@ export default {
     color: rgba(255, 255, 255, 1);
     width: 100%;
     border: none;
+    margin-top: 15px;
+  }
+  .login-footer {
+    display: flex;
+    font-size: 14px;
+    font-family: MicrosoftYaHei;
+    color: rgba(96, 98, 102, 1);
+    line-height: 14px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+    span {
+      cursor: pointer;
+    }
+    span:hover {
+      color: #fe5f23;
+    }
   }
 }
 </style>

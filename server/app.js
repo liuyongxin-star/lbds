@@ -14,9 +14,8 @@ const debug = require('debug')('koa2:server')
 const path = require('path')
 
 const config = require('./config')
-const routes = require('./routes')
-const port = process.env.PORT || config.port
-
+const dbsConfig = require('./config/dbs.config')
+const { v1 } = require('./services');
 // error handler
 onerror(app)
 
@@ -24,13 +23,6 @@ onerror(app)
 app.use(bodyparser())
   .use(json())
   .use(logger())
-  .use(require('koa-static')(__dirname + '/public'))
-  .use(views(path.join(__dirname, '/views'), {
-    options: {settings: {views: path.join(__dirname, 'views')}},
-    map: {'njk': 'nunjucks'},
-    extension: 'njk'
-  }))
-  .use(router.routes())
   .use(router.allowedMethods())
 
 // logger
@@ -41,20 +33,11 @@ app.use(async (ctx, next) => {
   console.log(`${ctx.method} ${ctx.url} - $ms`)
 })
 
-router.get('/', async (ctx, next) => {
-  // ctx.body = 'Hello World'
-  ctx.state = {
-    title: 'Koa2'
-  }
-  await ctx.render('index', ctx.state)
-})
-
-routes(router)
 app.on('error', function(err, ctx) {
   console.log(err)
   logger.error('server error', err, ctx)
 })
-
-module.exports = app.listen(config.port, () => {
+app.use(v1.routes());
+module.exports = app.listen(process.env.PORT || config.port, () => {
   console.log(`Listening on http://localhost:${config.port}`)
 })

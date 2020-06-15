@@ -22,25 +22,27 @@ export default {
   data() {
     return {
       routers: [],
-      active: ""
+      active: "",
     };
   },
   watch: {
     $route() {
       console.log(this.$route);
       const route = this.$route.path.split("/").filter(function(s) {
-          if(s){
-              return  s
-          }
+        if (s) {
+          return s;
+        }
       });
-      this.active = '/' + route[0]
-    }
+      this.active = "/" + route[0];
+    },
   },
   mounted() {
-    this.active = this.$route.path
-    this.routers = this.$router.options.routes;
+    this.active = this.$route.path;
+    this.routers = this.$router.options.routes.filter((item) => {
+      return item.meta.nav;
+    });
   },
-  methods: {}
+  methods: {},
 };
 </script>
 <style lang="scss" scoped>

@@ -3,6 +3,10 @@ import VueRouter from 'vue-router'
 import template from "./modules/template"
 import component from "./modules/component"
 import project from "./modules/project"
+import set from "./modules/set"
+import users from "./modules/user"
+
+import storage from "@/utils/datastore"
 Vue.use(VueRouter)
 
 const routes = [
@@ -10,7 +14,8 @@ const routes = [
     path: '/',
     component: () => import("@/views/layout/index"),
     meta: {
-      title: "首页"
+      title: "首页",
+      nav: true
     },
     icon: "el-icon-monitor",
     children: [{
@@ -32,7 +37,9 @@ const routes = [
   },
   project,
   component,
-  template
+  template,
+  users,
+  set
 ]
 
 
@@ -46,13 +53,13 @@ VueRouter.prototype.push = function push(location) {
 }
 router.beforeEach(async(to, from, next) => {
   console.log(to.name,"to")
-  const hasToken = localStorage.getItem("token")
-  console.log(hasToken)
+  const token = storage.get('token').value();
+  console.log(token,"token值")
   if(to.meta.noLogin){ //不需要登录
     next()
     return;
   }
-  if(!hasToken){
+  if(!token){
     next("/login")
     return;
   }

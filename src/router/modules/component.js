@@ -3,7 +3,8 @@ const component = {
   component: () => import("@/views/layout/index"),
   icon: "el-icon-document",
   meta: {
-    title: "组件管理"
+    title: "组件管理",
+    nav: true
   },
   name: "模板管理",
   children: [{

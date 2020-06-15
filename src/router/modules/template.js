@@ -3,7 +3,8 @@ const template = {
   component: () => import("@/views/layout/index"),
   icon: "el-icon-document",
   meta: {
-    title: "模板管理"
+    title: "模板管理",
+    nav: true
   },
   children: [{
     path: "",

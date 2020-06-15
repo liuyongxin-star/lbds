@@ -6,11 +6,12 @@
         <Nav></Nav>
       </div>
       <div class="layout-right">
-          <div class="layout-right_content">
-            <keep-alive>
-             <router-view></router-view>
-            </keep-alive>
-          </div>
+        <div class="layout-right_content">
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive" />
+          </keep-alive>
+          <router-view  v-if="!$route.meta.keepAlive" />
+        </div>
       </div>
     </div>
   </div>
@@ -24,8 +25,8 @@ export default {
   },
   components: {
     Nav,
-    NavHeader
-  }
+    NavHeader,
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -40,13 +41,12 @@ export default {
     flex: 1;
     padding: 16px;
     box-sizing: border-box;
-    background: #F0F2F5;
+    background: #f0f2f5;
     min-height: calc(100vh - 60px);
-    .layout-right_content{
-        background: white;
-        height: 100%;
+    .layout-right_content {
+      background: white;
+      height: 100%;
     }
-  
   }
 }
 </style>

@@ -5,15 +5,14 @@ import {
     ipcMain,
     session
 } from 'electron'
+import storage from "@/utils/datastore"
 import {
     createProtocol
 } from 'vue-cli-plugin-electron-builder/lib'
-const storage = require('electron-localstorage');
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 let win
 let serverProcess = null;
-let loading;
 protocol.registerSchemesAsPrivileged([{
     scheme: 'app',
     privileges: {
@@ -22,53 +21,46 @@ protocol.registerSchemesAsPrivileged([{
     }
 }])
 
-
-function createWindow() {
+ async function createWindow() {
     var width = 1122
     var height = 670
-    session.defaultSession.cookies.get({
-        url: 'http://localhost/'
-    }).then((cookies) => {
-        console.log(cookies,"cookies------------------")
-        if (!cookies.length) {
-            width = 400
-            height = 320
+    var token = storage.get('token').value();
+    if (!token) {
+        width = 400
+        height = 320
+    }
+    win = new BrowserWindow({
+        width: width,
+        height: height,
+        resizable: false, //禁止改变主窗口尺寸
+        show: false, // 一开始是false,loadpage加载完毕的时候为true
+        frame: false, // 关闭window自带的关闭等功能以及工具栏， 无边框窗口是不允许拖动的，可通过设置样式让其可拖动，样式见index.html中
+        webPreferences: {
+            nodeIntegration: true,
+            webSecurity: false //允许跨域
         }
-        win = new BrowserWindow({
-            width: width,
-            height: height,
-            resizable: false, //禁止改变主窗口尺寸
-            show: false, // 一开始是false,loadpage加载完毕的时候为true
-            frame: false, // 关闭window自带的关闭等功能以及工具栏， 无边框窗口是不允许拖动的，可通过设置样式让其可拖动，样式见index.html中
-            webPreferences: {
-                nodeIntegration: true,
-                webSecurity: false //允许跨域
-            }
-        })
+    })
 
-        if (process.env.WEBPACK_DEV_SERVER_URL) {
-            win.show();
-            win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-            // 开启渲染进程中的调试模式
-            if (!process.env.IS_TEST) win.webContents.openDevTools()
-        } else {
-            win.show();
-            createProtocol('app');
-            win.loadURL('app://./index.html')
-        }
+    if (process.env.WEBPACK_DEV_SERVER_URL) {
+        win.show();
+        win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+        // 开启渲染进程中的调试模式
+        if (!process.env.IS_TEST) win.webContents.openDevTools()
+    } else {
+        win.show();
+        createProtocol('app');
+        win.loadURL('app://./index.html')
+    }
 
-        win.on('closed', () => {
-            win = null;
-            app.quit();
-        })
+    win.on('closed', () => {
+        win = null;
+        app.quit();
+    })
 
-        win.on('close', function (event) {
-            // 关闭前差一个弹窗，询问是否退出程序 *************；
-            stopServer(); //停止后台服务
+    win.on('close', function (event) {
+        // 关闭前差一个弹窗，询问是否退出程序 *************；
+        stopServer(); //停止后台服务
 
-        })
-    }).catch((error) => {
-        console.log(error)
     })
     // console.log(token,"token")
 
@@ -105,7 +97,7 @@ ipcMain.on('window-close', function () {
 
 // 设置窗口
 ipcMain.on('setMainWindow', function (e, data) {
-    console.log(data.width, "data")
+    console.log("收到改变大小",data.width)
     win.setSize(data.width, data.height);
     win.center()
 
