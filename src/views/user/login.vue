@@ -43,8 +43,8 @@ export default {
   data() {
     return {
       form: {
-        phone: "",
-        password: "",
+        phone: "88888888888",
+        password: "88888888888",
       },
     };
   },
