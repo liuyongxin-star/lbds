@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
 import storage from "@/utils/datastore";
 const exec = require("child_process").exec;
 const execFile = require("child_process").execFile;
@@ -43,18 +42,12 @@ export default {
   components: {},
   mounted() {
     this.save_path = localStorage.getItem("save_path");
-    this.setWidth();
   },
   methods: {
      clearFn() {
      storage.set("token", "").write(); 
      this.$router.push("/login")
     },
-    setWidth() {
-      ipcRenderer.send("setMainWindow", { width: 1122, height: 670 });
-    },
-    
-   
     click_save_input() {
       document.getElementById("file3").click();
     },
