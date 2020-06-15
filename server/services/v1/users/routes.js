@@ -8,24 +8,11 @@ const router = new Router({
 // Get all users
 router.get('/', async (ctx) => { //用户列表
   try {
-    const result = await User.find({});
-    let data = []
-    result.forEach(item => {
-      if (item.status === "10") {
-        data.push({
-          name: item.name,
-          phone: item.phone,
-          id: item.id,
-          endTime: item.endTime,
-          status: item.status,
-        })
-      }
-
-    })
+    const result = await User.find({},{"password":0});
     ctx.body = {
       code: 0,
       msg: "",
-      data
+      data:result
     };
   } catch (error) {
     ctx.throw(400, error.message);
@@ -59,7 +46,6 @@ router.post('/login', async (ctx) => { //登录
         token: findUser.id,
         name: findUser.name,
         phone: findUser.phone,
-
       }
     };
   } else {
@@ -122,14 +108,5 @@ router.post('/delete', async (ctx) => { //删除用户 修改status为20 逻辑�
   }
 });
 
-// Delete a user
-router.delete('/:id', async (ctx) => {
-  try {
-    await User.findByIdAndDelete(ctx.params.id);
-    ctx.status = 200;
-  } catch (error) {
-    ctx.throw(400, error.message);
-  }
-});
 
 module.exports = router;
