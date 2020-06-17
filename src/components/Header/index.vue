@@ -23,6 +23,7 @@ export default {
     return {
       searchKey: "搜索音乐，视频，歌词，电台",
       arrow: true,
+       winFlag:false,
       routes: []
     };
   },
@@ -57,7 +58,8 @@ export default {
       ipcRenderer.send("window-min"); // 通知主进程我要进行窗口最小化操作
     },
     maximizeWin() {
-      ipcRenderer.send("window-max");
+       this.winFlag=!this.winFlag; 
+      ipcRenderer.send('window-max',{winFlag:this.winFlag}) //  通知主进程,我要进行窗口最大化、恢复操作，并传入一个Boolean值
     },
     closeWin() {
       ipcRenderer.send("window-close");

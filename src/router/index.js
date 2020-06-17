@@ -28,6 +28,13 @@ const routes = [
     }]
   },
   {
+    path: "/register",
+    component: () => import("@/views/user/register"),
+    meta: {
+      title: "注册",
+      noLogin: true
+    },
+  },{
     path: '/login',
     component: () => import("@/views/user/login"),
     meta: {

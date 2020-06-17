@@ -8,7 +8,10 @@ const router = new Router({
 // Get all users
 router.get('/', async (ctx) => { //用户列表
   try {
-    const result = await User.find({},{"password":0});
+    const result = await (await User.find({},{"password":0})).filter(item=>{
+      return item.status == "10"
+    });
+    
     ctx.body = {
       code: 0,
       msg: "",
@@ -37,7 +40,7 @@ router.post('/login', async (ctx) => { //登录
   }
   if (findUser.password === md5(password)) {
     var date = new Date()
-    findUser.endTime = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDay()} ${date.getHours()}:${date.getMinutes()}`
+    findUser.endTime = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
     await findUser.save();
     ctx.body = {
       code: 0,
@@ -69,6 +72,15 @@ router.post('/create', async (ctx) => { //创建用户
       phone,
       name
     } = ctx.request.body;
+    const result = await User.findOne({phone});
+    if(result){
+      ctx.body = {
+        code: -1,
+        msg: "已存在该用户",
+        data: {}
+      };
+      return;
+    }
     const user = new User({
       name,
       password: md5(password),

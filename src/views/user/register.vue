@@ -71,7 +71,7 @@ export default {
         setTimeout(() => {
           storage.set("token", res.data.token).write();
           this.$router.push("/");
-        }, 1000);
+        }, 1500);
       });
     },
 

@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { ipcRenderer, session } from "electron";
 import storage from "@/utils/datastore";
 const exec = require("child_process").exec;
 const execFile = require("child_process").execFile;

@@ -21,7 +21,7 @@ protocol.registerSchemesAsPrivileged([{
     }
 }])
 
- async function createWindow() {
+async function createWindow() {
     var width = 1122
     var height = 670
     var token = storage.get('token').value();
@@ -32,7 +32,7 @@ protocol.registerSchemesAsPrivileged([{
     win = new BrowserWindow({
         width: width,
         height: height,
-        resizable: false, //禁止改变主窗口尺寸
+        resizable: false,
         show: false, // 一开始是false,loadpage加载完毕的时候为true
         frame: false, // 关闭window自带的关闭等功能以及工具栏， 无边框窗口是不允许拖动的，可通过设置样式让其可拖动，样式见index.html中
         webPreferences: {
@@ -81,12 +81,13 @@ ipcMain.on('window-min', function () { // 收到渲染进程的窗口最小化�
     win.minimize();
 })
 
-// 窗口 最大化、恢复
-ipcMain.on('window-max', function () {
-    if (win.isMaximized()) {
-        win.restore();
-    } else {
+
+ipcMain.on('window-max', function(event, obj) { // 接收渲染进程的消息和数据  
+    if (obj.winFlag) { // val为 true，代表我想进行最大化窗口操作，此时 调用最大化函数
         win.maximize();
+    } else {
+        win.setContentSize(1122, 670); //重新设置窗口客户端的宽高值（例如网页界面），这里win.setSize(x,y)并不生效。
+        win.center(); // 窗口居中
     }
 })
 
@@ -97,8 +98,8 @@ ipcMain.on('window-close', function () {
 
 // 设置窗口
 ipcMain.on('setMainWindow', function (e, data) {
-    console.log("收到改变大小",data.width)
-    win.setSize(data.width, data.height);
+    console.log("收到改变大小", data.width)
+    win.setContentSize(data.width, data.height);
     win.center()
 
 })
