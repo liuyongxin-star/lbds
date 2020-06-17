@@ -21,7 +21,7 @@
         >
       </div>
       <el-button type="primary" @click="clearFn" style="width:28%"
-        >清除缓存</el-button
+        >退出登录</el-button
       >
     </div>
   </div>
