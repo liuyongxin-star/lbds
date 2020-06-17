@@ -27,13 +27,13 @@ export default {
   },
   watch: {
     $route() {
-      console.log(this.$route);
       const route = this.$route.path.split("/").filter(function(s) {
         if (s) {
           return s;
         }
       });
-      this.active = "/" + route[0];
+      const name = route[0] ? route[0] : ''
+      this.active = "/" +  name;
     },
   },
   mounted() {

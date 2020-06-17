@@ -23,7 +23,8 @@ const routes = [
       component: () => import("@/views/Home"),
       icon: "el-icon-document",
       meta: {
-        title: "首页"
+        title: "首页",
+        keepAlive: true
       },
     }]
   },

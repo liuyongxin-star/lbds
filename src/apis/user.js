@@ -29,3 +29,17 @@ export function userDelete(data) {
 		data: data
 	})
 }
+export function stop(data) {
+	return axios({
+		url: '/users/stop',
+		method: 'post',
+		data: data
+	})
+}
+export function start(data) {
+	return axios({
+		url: '/users/start',
+		method: 'post',
+		data: data
+	})
+}

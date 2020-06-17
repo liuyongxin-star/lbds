@@ -14,14 +14,30 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="状态">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-            >删除</el-button
+          <span>
+            <el-tag :type="scope.row.status == 10 ? 'success' : 'danger'"> {{ scope.row.status | userStatus }}</el-tag>
+           </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" min-width="100">
+        <template slot-scope="scope">
+          <span
+            v-for="item in fnArr"
+            :key="item.label"
+            class="btn-item"
+            v-show="
+              scope.row.status == item.showStatus || item.showStatus === 'all'
+            "
           >
+            <el-button
+              size="mini"
+              :type="item.type"
+              @click="handleDelete(scope.row.id, item.text, item.fn)"
+              >{{ item.label }}</el-button
+            >
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -48,7 +64,7 @@
 </template>
 
 <script>
-import { list, create, userDelete } from "@/apis/user";
+import { list, create, userDelete, stop, start } from "@/apis/user";
 export default {
   data() {
     return {
@@ -57,6 +73,29 @@ export default {
         name: "",
         phone: "",
       },
+      fnArr: [
+        {
+          label: "启用",
+          text: "是否启动该用户？",
+          fn: start,
+          showStatus: 20,
+          type: "primary",
+        },
+        {
+          label: "停用",
+          text: "是否停用该用户？",
+          fn: stop,
+          type: "warning",
+          showStatus: 10,
+        },
+        {
+          label: "删除",
+          text: "是否删除该用户？删除之后将无法恢复！",
+          fn: userDelete,
+          showStatus: "all",
+          type: "danger",
+        },
+      ],
       tableData: [],
     };
   },
@@ -64,8 +103,8 @@ export default {
     this.getList();
   },
   methods: {
-    handleDelete(id) {
-      this.$confirm("是否删除该用户?", "提示", {
+    handleDelete(id, text, methods) {
+      this.$confirm(text, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -73,15 +112,17 @@ export default {
         const data = {
           id,
         };
-        userDelete(data).then((res) => {
+        methods(data).then((res) => {
           console.log(res);
           this.$message({
-            message: "删除成功",
+            message: "操作成功",
             type: "success",
           });
           this.getList();
         });
-      });
+      }).catch(() => {
+                 
+        });
     },
     createFn() {
       const data = {
@@ -114,5 +155,8 @@ export default {
   .user-header {
     text-align: right;
   }
+}
+.btn-item {
+  margin-right: 10px;
 }
 </style>

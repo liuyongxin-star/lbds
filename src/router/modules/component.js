@@ -1,7 +1,7 @@
 const component = {
   path: '/component',
   component: () => import("@/views/layout/index"),
-  icon: "el-icon-document",
+  icon: "el-icon-brush",
   meta: {
     title: "组件管理",
     nav: true

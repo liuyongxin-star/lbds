@@ -8,10 +8,7 @@ const router = new Router({
 // Get all users
 router.get('/', async (ctx) => { //用户列表
   try {
-    const result = await (await User.find({},{"password":0})).filter(item=>{
-      return item.status == "10"
-    });
-    
+    const result = await User.find({},{"password":0})
     ctx.body = {
       code: 0,
       msg: "",
@@ -46,9 +43,7 @@ router.post('/login', async (ctx) => { //登录
       code: 0,
       msg: "登录成功",
       data: {
-        token: findUser.id,
-        name: findUser.name,
-        phone: findUser.phone,
+        token: findUser.id
       }
     };
   } else {
@@ -68,7 +63,6 @@ router.post('/login', async (ctx) => { //登录
 router.post('/create', async (ctx) => { //创建用户
   try {
     const {
-      password,
       phone,
       name
     } = ctx.request.body;
@@ -83,7 +77,7 @@ router.post('/create', async (ctx) => { //创建用户
     }
     const user = new User({
       name,
-      password: md5(password),
+      password: md5(phone),
       phone
     });
     await user.save();
@@ -96,23 +90,36 @@ router.post('/create', async (ctx) => { //创建用户
     ctx.throw(400, error.message);
   }
 });
-
-// Update a user
-router.post('/delete', async (ctx) => { //删除用户 修改status为20 逻辑删除
+// 删除用户
+router.post('/delete', async (ctx) => {
   const {
     id
   } = ctx.request.body;
   try {
-    const userDoc = await User.findOne({
-      '_id': id
-    })
+    const userDoc = await User.findByIdAndRemove(id)
+    if(userDoc){
+      ctx.body = {
+        code: 0,
+        msg: "删除成功",
+        data: {}
+      };
+    }
+  } catch (error) {
+    ctx.throw(400, error.message);
+  }
+});
+// 停用账户
+router.post('/stop', async (ctx) => { 
+  const {
+    id
+  } = ctx.request.body;
+  try {
+    const userDoc = await User.findById(id)
     userDoc.status = 20
-    console.log(userDoc, "userDoc")
     await userDoc.save();
-
     ctx.body = {
       code: 0,
-      msg: "删除成功",
+      msg: "停用成功",
       data: {}
     };
   } catch (error) {
@@ -120,5 +127,22 @@ router.post('/delete', async (ctx) => { //删除用户 修改status为20 逻辑�
   }
 });
 
-
+// 启用账户
+router.post('/start', async (ctx) => { 
+  const {
+    id
+  } = ctx.request.body;
+  try {
+    const userDoc = await User.findById(id)
+    userDoc.status = 10
+    await userDoc.save();
+    ctx.body = {
+      code: 0,
+      msg: "启用成功",
+      data: {}
+    };
+  } catch (error) {
+    ctx.throw(400, error.message);
+  }
+});
 module.exports = router;
