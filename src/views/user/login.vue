@@ -24,7 +24,7 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-lock"></i>
       </el-input>
-      <el-button type="primary" class="login-btn" @click="loginFn"
+      <el-button type="primary" :loading="loading" class="login-btn" @click="loginFn"
         >登录</el-button
       >
       <!-- <div class="login-footer">
@@ -46,11 +46,11 @@ export default {
         phone: "88888888888",
         password: "88888888888",
       },
+      loading: false
     };
   },
   mounted() {
-    console.log("回来了---------")
-     ipcRenderer.send("setMainWindow", { width: 400, height: 820 });
+    this.setWidth()
   },
   methods: {
     minimizeWin() {
@@ -63,20 +63,16 @@ export default {
       ipcRenderer.send("window-close");
     },
     loginFn() {
+      this.loading = true
       login(this.form).then((res) => {
-        this.$message({
-          message: "登录成功",
-          type: "success",
-        });
-        setTimeout(() => {
-          storage.set("token", res.data.token).write();
+        this.loading = false
+         storage.set("token", res.data.token).write();
           this.$router.push("/");
-        }, 1000);
       });
     },
 
     setWidth() {
-      ipcRenderer.send("setMainWindow", { width: 400, height: 820 });
+      ipcRenderer.send("setMainWindow", { width: 400, height: 320 });
     },
   },
 };
